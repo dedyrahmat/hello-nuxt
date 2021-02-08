@@ -1,0 +1,72 @@
+<template>
+  <div>
+    <p v-if="$fetchState.pending">
+      <span class="loading"></span>
+    </p>
+    <p v-else-if="$fetchState.error">Error while fetching mountains 🤬</p>
+    <ul v-else>
+      <li
+        class="text-center"
+        v-for="mountain in mountains"
+        :key="mountain.title"
+      >
+        <NuxtLink
+          :to="{ name: 'mountains-slug', params: { slug: mountain.slug } }"
+        >
+          {{ mountain.title }}
+        </NuxtLink>
+      </li>
+    </ul>
+    <button
+      class="bg-blue-400 px-5 py-3"
+      v-if="!$fetchState.pending"
+      @click="$fetch"
+    >
+      Refresh
+    </button>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      mountains: [],
+    }
+  },
+  async fetch() {
+    this.mountains = await this.$axios.$get('/mountains')
+  },
+  // async asyncData() {
+  //   const mountains = await fetch(
+  //     'https://api.nuxtjs.dev/mountains'
+  //   ).then((res) => res.json())
+  //   return {
+  //     mountains,
+  //   }
+  // },
+}
+</script>
+
+<style scoped>
+li {
+  margin-bottom: 0.5rem;
+}
+li:first-letter {
+  text-transform: uppercase;
+}
+.loading {
+  display: inline-block;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 4px solid rgba(9, 133, 81, 0.705);
+  border-radius: 50%;
+  border-top-color: #158876;
+  animation: spin 1s ease-in-out infinite;
+}
+@keyframes spin {
+  to {
+    -webkit-transform: rotate(360deg);
+  }
+}
+</style>
